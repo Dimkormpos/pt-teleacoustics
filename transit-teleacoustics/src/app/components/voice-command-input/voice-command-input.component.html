@@ -1,4 +1,14 @@
-<div>
-  <button (click)="startListening()">🎙️ Start Listening</button>
-  <p *ngIf="transcript">Heard: {{ transcript }}</p>
+<div class="speech-container">
+  <button
+    (click)="startListening()"
+    class="speech-button"
+    [attr.aria-pressed]="isListening"
+    aria-label="Ξεκινήστε ακρόαση φωνής"
+  >
+    🎙️ {{ isListening ? 'Ακούει...' : 'Ξεκινήστε Ακρόαση' }}
+  </button>
+
+  <div class="transcript-box" aria-live="polite">
+    <strong>Αποτέλεσμα:</strong> {{ transcript || 'Δεν υπάρχει ακόμα αποτέλεσμα.' }}
+  </div>
 </div>
