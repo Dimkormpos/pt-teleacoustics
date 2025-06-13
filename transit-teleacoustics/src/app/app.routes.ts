@@ -4,6 +4,11 @@ import { PrismNavigatorComponent } from './components/prism-navigator/prism-navi
 export const routes: Routes = [
     {
         path: '',
+        redirectTo: 'home',
+        pathMatch: 'full'
+    },
+    {
+        path: 'home',
         component: PrismNavigatorComponent
     }
 ];
