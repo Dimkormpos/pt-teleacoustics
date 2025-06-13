@@ -1,4 +1,5 @@
-<div aria-describedby="description" swipper (swipedDown)="swipeDown()" (swipedLeft)="swipeLeft()"
+<div [attr.aria-describedby]="activeDescription | async" swipper (swipedDown)="swipeDown()" (swipedLeft)="swipeLeft()"
     (swipedRight)="swipedRight()" (swipedUp)="swipeUp()">
-    <h1>{{swippResult | async}}</h1>
+
+    <h1>{{activeDescription | async}}</h1>
 </div>

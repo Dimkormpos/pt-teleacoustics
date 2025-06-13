@@ -12,13 +12,48 @@ import { CommonModule } from '@angular/common';
 export class PrismNavigatorComponent {
   swippResult: BehaviorSubject<string> = new BehaviorSubject<string>('Swipe to navigate');
   firstTime: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+  activeMenu: MenuItem | null = null;
+  activeDescription: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  menus: MenuItem[] = [
+    {
+      key: 'info',
+      order: 0,
+      description: 'Οδηγίες χρήσης. Επιλέξτε για να βρείτε πληροφορίες για το πώς να χρησιμοποιήσετε την εφαρμογή.'
+    },
+    {
+      key: 'whereAmI',
+      order: 1,
+      description: 'Σε ποια στάση βρίσκομαι; Επιλέξτε για να βρείτε την τρέχουσα τοποθεσία σας και την στάση λεωφορείου στην οποία βρίσκεστε και να ακούσετε τα λεωφορία που περνάνε.'
+    },
+    {
+      key: 'inputSpeach',
+      order: 2,
+      description: 'Εισαγωγή φωνής. Επιλέξτε για να εισάγετε φωνητικά το λεωφορείο που θέλετε να .'
+    },
+    {
+      key: 'inputText',
+      order: 3,
+      description: 'Εισαγωγή κειμένου. Επιλέξτε για να εισάγετε κείμενο το λεωφορείο στην οποία θέλετε να πάτε.'
+    },
+    {
+      key: 'nextStop',
+      order: 4,
+      description: 'Επόμενη στάση. Επιλέξτε για να ακούσετε την επόμενη στάση του λεωφορείου που βρίσκεστε.'
+    },
+  ]
+
   constructor() {
     const firstTimeKey = 'prism-navigator-first-time';
-    this.firstTime.next(localStorage.getItem(firstTimeKey) === null);
+    this.activeMenu = this.menus[1]; // Set default active menu to the first one
+    this.activeDescription.next(this.activeMenu.description);
     if (this.firstTime.value) {
       localStorage.setItem(firstTimeKey, 'true'); // Set default value
+      this.activeMenu = this.menus[0];
     }
+
+    this.activeDescription.next(this.activeMenu.description);
   }
+
 
   swipedRight() {
     this.swippResult.next('Swiped right');
@@ -37,4 +72,10 @@ export class PrismNavigatorComponent {
     console.log('Swiped down');
   }
 
+}
+
+export interface MenuItem {
+  key: string;
+  order: number;
+  description: string;
 }
