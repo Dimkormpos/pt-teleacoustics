@@ -66,11 +66,10 @@ export class OasaApiService {
   }
   /**
    * Gets the real-time location of a specific bus by vehicle ID.
-   * @param vehicleId The ID of the vehicle (e.g. "2106")
+   * @param routeCode The code of the route
    */
-  getBusLocation(vehicleId: string): Observable<any> {
-    const url = `${this.BASE_URL}/?act=getBusLocation&p1=${vehicleId}`;
-    return this._http.get(url);
+  getBusLocation(routeCode: string): Observable<BusLocation[]> {
+    return this._http.get<BusLocation[]>(`${this.BASE_URL}/?act=getBusLocation&p1=${routeCode}`);
   }
 
   webRoutesForStop(stopCode: string): Observable<Route[]> {
@@ -102,4 +101,12 @@ export interface Route {
   LineDescr: string;
   LineDescrEng: string;
   MasterLineCode: string;
+}
+
+export interface BusLocation {
+  VEH_NO: string;      // Vehicle number
+  CS_DATE: string;     // Date and time as string
+  CS_LAT: string;      // Latitude as string (could parse to number if needed)
+  CS_LNG: string;      // Longitude as string (could parse to number if needed)
+  ROUTE_CODE: string;  // Route code
 }
