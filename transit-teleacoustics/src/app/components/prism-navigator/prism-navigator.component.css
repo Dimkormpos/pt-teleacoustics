@@ -1,15 +1,19 @@
 :host {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: #000;
-    z-index: 9999;
-    display: block;
-}
+    div {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: #000;
+        z-index: 9999;
+        display: block;
+    }
 
-div {
-    color: #fff;
-    font-size: 2rem;
+    h1 {
+        font-size: 3rem;
+        text-align: center;
+        margin-top: 20vh;
+        color: aliceblue
+    }
 }

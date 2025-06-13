@@ -1,3 +1,4 @@
-<div swipper (swipedDown)="swipeDown()" (swipedLeft)="swipeLeft()" (swipedRight)="swipedRight()" (swipedUp)="swipeUp()">
-    Για
-    κάνε μερικά swippes</div>
+<div aria-describedby="description" swipper (swipedDown)="swipeDown()" (swipedLeft)="swipeLeft()"
+    (swipedRight)="swipedRight()" (swipedUp)="swipeUp()">
+    <h1>{{swippResult | async}}</h1>
+</div>
