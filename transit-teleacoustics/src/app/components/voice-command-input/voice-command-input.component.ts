@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, NgZone, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-voice-command-input',
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './voice-command-input.component.html',
   styleUrl: './voice-command-input.component.css'
 })
@@ -12,53 +13,77 @@ transcript: string = '';
 isListening: boolean = false;
 recognition: any | null = null;
 
-ngOnInit(): void {
-  const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+/**
+ *
+ */
+constructor(private ngZone: NgZone) {
+}
+  ngOnInit(): void {
+    const SpeechRecognition =
+      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
-  if (SpeechRecognition) {
+    if (!SpeechRecognition) {
+      console.warn('Speech recognition not supported');
+      alert('Η αναγνώριση φωνής δεν υποστηρίζεται στο πρόγραμμα περιήγησης.');
+      return;
+    }
+
     this.recognition = new SpeechRecognition();
     this.recognition.lang = 'el-GR';
-    this.recognition.interimResults = false;
+    this.recognition.interimResults = true;
+    this.recognition.continuous = false;
 
     this.recognition.onstart = () => {
-      this.isListening = true;
-      console.log('🎤 Listening...');
-      this.speak('Ξεκίνησε η ακρόαση'); // "Listening started" in Greek
+      this.ngZone.run(() => {
+        this.isListening = true;
+        console.log('🎤 Listening...');
+      });
     };
 
     this.recognition.onresult = (event: any) => {
-      const result = event.results[0][0].transcript;
-      this.transcript = result;
-      this.isListening = false;
-      console.log('Voice Input:', result);
-      this.speak('Το αποτέλεσμα είναι: ' + result); // "The result is..."
-    };
-
-    this.recognition.onend = () => {
-      this.isListening = false;
+      let interimTranscript = '';
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        interimTranscript += event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          this.ngZone.run(() => {
+            this.transcript = interimTranscript.trim();
+            this.isListening = false;
+            console.log('✅ Final result:', this.transcript);
+            this.speak('Το αποτέλεσμα είναι: ' + this.transcript);
+          });
+        } else {
+          this.ngZone.run(() => {
+            this.transcript = interimTranscript.trim();
+          });
+        }
+      }
     };
 
     this.recognition.onerror = (event: any) => {
-      this.isListening = false;
-      console.error('Speech recognition error', event);
-      this.speak('Παρουσιάστηκε σφάλμα'); // "An error occurred"
+      this.ngZone.run(() => {
+        this.isListening = false;
+        console.error('Speech recognition error', event);
+        this.speak('Παρουσιάστηκε σφάλμα');
+      });
     };
-  } else {
-    console.warn('Speech recognition not supported in this browser.');
-    alert('Η αναγνώριση φωνής δεν υποστηρίζεται σε αυτό το πρόγραμμα περιήγησης.');
+
+    this.recognition.onend = () => {
+      this.ngZone.run(() => {
+        this.isListening = false;
+      });
+    };
   }
-}
 
-startListening(): void {
-  if (this.recognition && !this.isListening) {
-    this.recognition.start();
+  startListening(): void {
+    if (this.recognition && !this.isListening) {
+      this.transcript = ''; // Reset if needed
+      this.recognition.start();
+    }
   }
-}
 
-speak(message: string): void {
-  const utterance = new SpeechSynthesisUtterance(message);
-  utterance.lang = 'el-GR';
-  window.speechSynthesis.speak(utterance);
-}
-
+  speak(message: string): void {
+    const utterance = new SpeechSynthesisUtterance(message);
+    utterance.lang = 'el-GR';
+    window.speechSynthesis.speak(utterance);
+  }
 }

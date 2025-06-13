@@ -1,14 +1,15 @@
-<div class="speech-container">
+<div class="voice-wrapper">
   <button
     (click)="startListening()"
-    class="speech-button"
+    class="big-voice-button"
     [attr.aria-pressed]="isListening"
-    aria-label="Ξεκινήστε ακρόαση φωνής"
+    aria-label="Ξεκινήστε Ακρόαση Φωνής"
   >
     🎙️ {{ isListening ? 'Ακούει...' : 'Ξεκινήστε Ακρόαση' }}
   </button>
 
   <div class="transcript-box" aria-live="polite">
-    <strong>Αποτέλεσμα:</strong> {{ transcript || 'Δεν υπάρχει ακόμα αποτέλεσμα.' }}
+    <strong>Αποτέλεσμα:</strong><br />
+    {{ transcript || 'Δεν υπάρχει ακόμα αποτέλεσμα.' }}
   </div>
 </div>
