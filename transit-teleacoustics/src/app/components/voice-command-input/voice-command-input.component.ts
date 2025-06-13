@@ -44,11 +44,15 @@ constructor(private ngZone: NgZone) {
       let interimTranscript = '';
       for (let i = event.resultIndex; i < event.results.length; ++i) {
         interimTranscript += event.results[i][0].transcript;
+
         if (event.results[i].isFinal) {
           this.ngZone.run(() => {
             this.transcript = interimTranscript.trim();
             this.isListening = false;
             console.log('✅ Final result:', this.transcript);
+
+            this.recognition.stop(); // 💥 Force stop on final result
+
             this.speak('Το αποτέλεσμα είναι: ' + this.transcript);
           });
         } else {
@@ -58,6 +62,7 @@ constructor(private ngZone: NgZone) {
         }
       }
     };
+
 
     this.recognition.onerror = (event: any) => {
       this.ngZone.run(() => {
