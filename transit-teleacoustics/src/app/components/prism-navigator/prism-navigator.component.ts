@@ -11,6 +11,14 @@ import { CommonModule } from '@angular/common';
 })
 export class PrismNavigatorComponent {
   swippResult: BehaviorSubject<string> = new BehaviorSubject<string>('Swipe to navigate');
+  firstTime: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+  constructor() {
+    const firstTimeKey = 'prism-navigator-first-time';
+    this.firstTime.next(localStorage.getItem(firstTimeKey) === null);
+    if (this.firstTime.value) {
+      localStorage.setItem(firstTimeKey, 'true'); // Set default value
+    }
+  }
 
   swipedRight() {
     this.swippResult.next('Swiped right');
