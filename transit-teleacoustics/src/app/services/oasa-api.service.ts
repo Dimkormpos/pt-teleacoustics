@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -49,9 +49,20 @@ export class OasaApiService {
    * @param latitude Latitude in decimal degrees
    * @param longitude Longitude in decimal degrees
    */
-  getClosestStops(latitude: number, longitude: number): Observable<any> {
+  getClosestStops(latitude: number, longitude: number): Observable<Stop[]> {
     const url = `${this.BASE_URL}/?act=getClosestStops&p1=${latitude}&p2=${longitude}`;
-    return this._http.get(url);
+    return this._http.get<Stop[]>(url);
+  }
+
+  /**
+   * Gets the closest bus stops to the provided latitude and longitude.
+   * @param latitude Latitude in decimal degrees
+   * @param longitude Longitude in decimal degrees
+   */
+  getNearestStop(latitude: number, longitude: number): Observable<Stop> {
+    return this.getClosestStops(latitude, longitude).pipe(
+      map(stops => stops[0]) // return the first (nearest) stop
+    );
   }
   /**
    * Gets the real-time location of a specific bus by vehicle ID.
@@ -61,4 +72,34 @@ export class OasaApiService {
     const url = `${this.BASE_URL}/?act=getBusLocation&p1=${vehicleId}`;
     return this._http.get(url);
   }
+
+  webRoutesForStop(stopCode: string): Observable<Route[]> {
+    return this._http.get<Route[]>(`${this.BASE_URL}/?act=webRoutesForStop&p1=${stopCode}`);
+  }
+}
+
+export interface Stop {
+  StopCode: string;
+  StopID: string;
+  StopDescr: string;
+  StopDescrEng: string;
+  StopStreet: string;
+  StopStreetEng: string | null;
+  StopHeading: string;
+  StopLat: string;
+  StopLng: string;
+  distance: string;
+}
+
+export interface Route {
+  RouteCode: string;
+  LineCode: string;
+  RouteDescr: string;
+  RouteDescrEng: string;
+  RouteType: string;
+  RouteDistance: string; // in meters, as string — can convert to number if needed
+  LineID: string;
+  LineDescr: string;
+  LineDescrEng: string;
+  MasterLineCode: string;
 }
