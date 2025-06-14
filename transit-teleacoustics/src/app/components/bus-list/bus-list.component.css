@@ -1,0 +1,13 @@
+.list {
+    /* list-style: none; */
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.list-button {
+    padding: .5rem 1rem;
+    width: 100%;
+    border-radius: 10px;
+    font-size: 1.5rem;
+}

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
+import { map, Observable, of, switchMap, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -73,7 +73,23 @@ export class OasaApiService {
   }
 
   webRoutesForStop(stopCode: string): Observable<Route[]> {
-    return this._http.get<Route[]>(`${this.BASE_URL}/?act=webRoutesForStop&p1=${stopCode}`);
+    return this._http.get<Route[]>(`${this.BASE_URL}/?act=webRoutesForStop&p1=${stopCode}`).pipe(
+      switchMap((t: Route[]) => {
+        const routes = t;
+
+        const uniqueRoutes = [];
+        const seenLineIDs = new Set();
+
+        for (const route of routes) {
+          if (!seenLineIDs.has(route.LineID)) {
+            seenLineIDs.add(route.LineID);
+            uniqueRoutes.push(route);
+          }
+        }
+
+        return of(uniqueRoutes);
+      }),
+    );
   }
 
   webGetRoutesDetailsAndStops(routeCode: string): Observable<Route[]> {

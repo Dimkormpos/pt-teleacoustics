@@ -3,6 +3,7 @@ import { PrismNavigatorComponent } from './components/prism-navigator/prism-navi
 import { VoiceCommandInputComponent } from './components/voice-command-input/voice-command-input.component';
 import { TesterComponent } from './tester/tester.component';
 import { NextStopLocatorComponent } from './components/next-stop-locator/next-stop-locator.component';
+import { BusListComponent } from './components/bus-list/bus-list.component';
 
 export const routes: Routes = [
     {
@@ -12,7 +13,7 @@ export const routes: Routes = [
     },
     {
         path: 'home',
-        component: PrismNavigatorComponent
+        component: BusListComponent
     },
     {
         path: 'voice-input',
