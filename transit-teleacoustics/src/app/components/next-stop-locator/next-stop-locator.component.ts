@@ -71,34 +71,34 @@ export class NextStopLocatorComponent implements OnInit {
           return;
         }
 
-      if (this.nextStop) {
-        const distance = this.calculateDistance(
-          coordinates.latitude,
-          coordinates.longitude,
-          parseFloat(this.nextStop.StopLat),
-          parseFloat(this.nextStop.StopLng)
-        );
+        if (this.nextStop) {
+          const distance = this.calculateDistance(
+            coordinates.latitude,
+            coordinates.longitude,
+            parseFloat(this.nextStop.StopLat),
+            parseFloat(this.nextStop.StopLng)
+          );
 
-        if (distance < 50 && this.nextStop.StopCode !== this.lastNotifiedStopCode) {
-          console.log(`You're about to reach stop: ${this.nextStop.StopDescr}`);
-          this.stopMessage = `Πλησιάζετε στη στάση: ${this.nextStop.StopDescr}`;
+          if (distance < 50 && this.nextStop.StopCode !== this.lastNotifiedStopCode) {
+            console.log(`You're about to reach stop: ${this.nextStop.StopDescr}`);
+            this.stopMessage = `Πλησιάζετε στη στάση: ${this.nextStop.StopDescr}`;
 
-          // Prevent duplicate notifications
-          this.lastNotifiedStopCode = this.nextStop.StopCode;         
-          // Move to next stop
-          this.currentStop = this.nextStop;
-          const nextOrder = (parseInt(this.currentStop.RouteStopOrder, 10) + 1).toString();
-          this.nextStop = this.routeStops.find(x => x.RouteStopOrder === nextOrder);
+            // Prevent duplicate notifications
+            this.lastNotifiedStopCode = this.nextStop.StopCode;         
+            // Move to next stop
+            this.currentStop = this.nextStop;
+            const nextOrder = (parseInt(this.currentStop.RouteStopOrder, 10) + 1).toString();
+            this.nextStop = this.routeStops.find(x => x.RouteStopOrder === nextOrder);
 
-          if (this.nextStop) {
-            console.log('Upcoming next stop:', this.nextStop.StopDescr);
-            this.stopMessage += ` | Επόμενη στάση: ${this.nextStop.StopDescr}`;
-          } else {
-            console.log('End of route reached');
-            this.stopMessage += ` | Τέλος διαδρομής`;
+            if (this.nextStop) {
+              console.log('Upcoming next stop:', this.nextStop.StopDescr);
+              this.stopMessage += ` | Επόμενη στάση: ${this.nextStop.StopDescr}`;
+            } else {
+              console.log('End of route reached');
+              this.stopMessage += ` | Τέλος διαδρομής`;
+            }
           }
-        }
-      }        
+        }        
       }),
     ).subscribe();
   }
