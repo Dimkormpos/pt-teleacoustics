@@ -1,5 +1,10 @@
 <div class="message-wrapper">
-    <div class="bus-info-message">
+    <div   
+        class="bus-info-message"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+    >
       <p>Αναμονή για το λεωφορείο <b>{{ busRoute?.LineID }}</b></p>
       <p>Απόσταση λεωφορείου: <b>{{ busDistanceInMeters?.toFixed(0) }}</b> μέτρα</p>
       <p>Άφιξη σε <b>{{ stopArrival?.minutesUntilArrival || '-' }}</b> λεπτά</p>
@@ -15,3 +20,4 @@
 
 
 
+<!-- [attr.aria-label]="'Λεωφορείο ' + busRoute.LineID  + ', γραμμή' + busRoute.LineDescr" -->
