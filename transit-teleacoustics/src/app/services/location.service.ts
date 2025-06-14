@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { Observable } from 'rxjs';
 
 export interface Coordinates {
@@ -11,8 +11,11 @@ export interface Coordinates {
   providedIn: 'root'
 })
 export class LocationService {
-  constructor() { }
+  constructor(private ngZone: NgZone) { }
 
+  /**
+   * Gets the current location once.
+   */
   getCurrentLocation(): Observable<Coordinates> {
     return new Observable<Coordinates>((observer) => {
       if (!navigator.geolocation) {
@@ -38,6 +41,42 @@ export class LocationService {
           maximumAge: 0             // Always get a fresh position
         }
       );
+    });
+  }
+  /**
+   * Watches the position continuously.
+   */
+  watchPosition(): Observable<Coordinates> {
+    return new Observable<Coordinates>((observer) => {
+      if (!navigator.geolocation) {
+        observer.error('Geolocation is not supported by your browser.');
+        return;
+      }
+
+      const watchId = navigator.geolocation.watchPosition(
+        (position) => {
+          this.ngZone.run(() => {
+            observer.next({
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+              accuracy: position.coords.accuracy
+            });
+          });
+        },
+        (error) => {
+          this.ngZone.run(() => {
+            observer.error('Unable to track location: ' + error.message);
+          });
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0
+        }
+      );
+
+      // Unsubscribe logic: stop watching when no longer needed
+      return () => navigator.geolocation.clearWatch(watchId);
     });
   }
 }
