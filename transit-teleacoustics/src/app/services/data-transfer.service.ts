@@ -5,8 +5,8 @@ import { Route, Stop } from './oasa-api.service';
   providedIn: 'root'
 })
 export class DataTransferService {
-  public currentBusRouteData: Route | undefined;
-  public currentStop: Stop | undefined;
+  private currentBusRouteData: Route | undefined;
+  private currentStop: Stop | undefined;
 
   constructor() { }
 
@@ -14,15 +14,15 @@ export class DataTransferService {
     this.currentBusRouteData = input;
   }
 
-  public getSelectedBusRoute() {
+  public getSelectedBusRoute(): Route | undefined {
     return this.currentBusRouteData;
   }
 
-  public setCurrentStop(input: Route) {
-    this.currentBusRouteData = input;
+  public setCurrentStop(input: Stop) {
+    this.currentStop = input;
   }
 
-  public getcurrentStop() {
-    return this.currentBusRouteData;
+  public getcurrentStop(): Stop | undefined {
+    return this.currentStop;
   }
 }
