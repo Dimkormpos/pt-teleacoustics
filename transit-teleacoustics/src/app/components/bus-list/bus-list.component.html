@@ -1,0 +1,21 @@
+<div class="message-wrapper">
+    <section *ngIf="myStationUi" aria-labelledby="station-heading">
+        <h2 id="station-heading">
+            Βρίσκεσαι στην στάση: {{myStationUi}}. (Σε απόσταση {{myStationDistanceInMeters?.toFixed(0)}} μέτρα)
+        </h2>
+    </section>
+    
+    <section *ngIf="busRoutes" aria-labelledby="buses-heading">
+        <h2 id="buses-heading">Διερχόμενα λεωφορία στην στάση σου</h2>
+    
+        <ul class="list" role="list">
+            <li *ngFor="let busRoute of busRoutes" role="listitem">
+                <button (click)="onBusSelected(busRoute)" type="button" class="list-button"
+                    [attr.aria-label]="'Λεωφορείο ' + busRoute.LineID  + ', γραμμή' + busRoute.LineDescr">
+                    <span aria-hidden="true">{{busRoute.LineID}}</span><br />
+                    <span aria-hidden="true">{{busRoute.LineDescr}}</span>
+                </button>
+            </li>
+        </ul>
+    </section>
+</div>

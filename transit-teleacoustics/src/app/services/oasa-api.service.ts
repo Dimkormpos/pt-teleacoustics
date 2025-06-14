@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
+import { map, Observable, of, switchMap, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -13,11 +13,18 @@ export class OasaApiService {
   /**
    * Gets bus arrival information for a specific stop and route.
    * @param stopCode e.g. "060153"
-   * @param routeCode e.g. "0600"
    */
-  getStopArrivals(stopCode: string, routeCode: string): Observable<any> {
-    const url = `${this.BASE_URL}/?act=getStopArrivals&p1=${stopCode}&p2=${routeCode}`;
-    return this._http.get(url);
+  getStopArrivals(stopCode: string): Observable<StopArrival[]> {
+    const url = `${this.BASE_URL}/?act=getStopArrivals&p1=${stopCode}`;
+    return this._http.get<any[]>(url).pipe(
+      map(items =>
+        items.map(item => ({
+          routeCode: item.route_code,
+          vehicleCode: item.veh_code,
+          minutesUntilArrival: parseInt(item.btime2, 10)
+        }))
+      )
+    );
   }
 
   /**
@@ -68,20 +75,40 @@ export class OasaApiService {
    * Gets the real-time location of a specific bus by vehicle ID.
    * @param routeCode The code of the route
    */
-  getBusLocation(routeCode: string): Observable<BusLocation[]> {
+  getBusLocations(routeCode: string): Observable<BusLocation[]> {
     return this._http.get<BusLocation[]>(`${this.BASE_URL}/?act=getBusLocation&p1=${routeCode}`);
   }
 
   webRoutesForStop(stopCode: string): Observable<Route[]> {
-    return this._http.get<Route[]>(`${this.BASE_URL}/?act=webRoutesForStop&p1=${stopCode}`);
+    return this._http.get<Route[]>(`${this.BASE_URL}/?act=webRoutesForStop&p1=${stopCode}`).pipe(
+      switchMap((t: Route[]) => {
+        const routes = t;
+
+        const uniqueRoutes = [];
+        const seenLineIDs = new Set();
+
+        for (const route of routes) {
+          if (!seenLineIDs.has(route.LineID)) {
+            seenLineIDs.add(route.LineID);
+            uniqueRoutes.push(route);
+          }
+        }
+
+        return of(uniqueRoutes);
+      }),
+    );
   }
 
   webGetRoutesDetailsAndStops(routeCode: string): Observable<Route[]> {
     return this._http.get<any>(`${this.BASE_URL}/?act=webGetRoutesDetailsAndStops&p1=${routeCode}`);
   }
 
-  webGetStops(routeCode: string): Observable<Route[]> {
-    return this._http.get<any>(`${this.BASE_URL}/?act=webGetStops&p1=${routeCode}`);
+  webGetStops(routeCode: string): Observable<StopInfo[]> {
+    return this._http.get<StopInfo[]>(`${this.BASE_URL}/?act=webGetStops&p1=${routeCode}`);
+  }
+
+  webRouteDetails(routeCode: string): Observable<StopInfo[]> {
+    return this._http.get<StopInfo[]>(`${this.BASE_URL}/?act=webRouteDetails&p1=${routeCode}`);
   }
 }
 
@@ -117,4 +144,31 @@ export interface BusLocation {
   CS_LAT: string;      // Latitude as string (could parse to number if needed)
   CS_LNG: string;      // Longitude as string (could parse to number if needed)
   ROUTE_CODE: string;  // Route code
+}
+
+export interface StopInfo {
+  RouteStopOrder: string;
+  StopAmea: string | null;
+  StopCode: string | null;
+  StopDescr: string | null;
+  StopDescrEng: string | null;
+  StopHeading: string | null;
+  StopID: string | null;
+  StopLat: string;
+  StopLng: string
+  StopStreet: string | null;
+  StopStreetEng: string | null;
+  StopType: string | null;
+}
+
+export interface BusLocation {
+  route_code: string;
+  veh_code: string;
+  btime2: string;
+}
+
+export interface StopArrival {
+  routeCode: string;
+  vehicleCode: string;
+  minutesUntilArrival: number;
 }
