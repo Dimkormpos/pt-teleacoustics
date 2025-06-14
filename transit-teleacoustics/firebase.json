@@ -10,6 +10,10 @@
       {
         "source": "**",
         "destination": "/index.html"
+      },
+      {
+        "source": "/api/**",
+        "function": "http://34.175.132.35:8080"
       }
     ]
   }
