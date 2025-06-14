@@ -26,8 +26,8 @@ export class LocationService {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           observer.next({
-            latitude: 37.9770908,//position.coords.latitude,
-            longitude: 23.7130034,//position.coords.longitude,
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
             accuracy: position.coords.accuracy
           });
           observer.complete();
