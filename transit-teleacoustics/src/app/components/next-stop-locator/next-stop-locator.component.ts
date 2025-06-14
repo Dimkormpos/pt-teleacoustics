@@ -3,6 +3,7 @@ import { OasaApiService, StopInfo } from '../../services/oasa-api.service';
 import { combineLatest, interval, map, startWith, switchMap, tap } from 'rxjs';
 import { LocationService } from '../../services/location.service';
 import { CommonModule } from '@angular/common';
+import { DataTransferService } from '../../services/data-transfer.service';
 
 @Component({
   selector: 'app-next-stop-locator',
@@ -11,8 +12,8 @@ import { CommonModule } from '@angular/common';
   styleUrl: './next-stop-locator.component.css'
 })
 export class NextStopLocatorComponent implements OnInit {
-  public routeCode: string = "5412"
-  public currentStopCode: string = "190013"
+  public routeCode: string = "1890"
+  public currentStopCode: string = "60372"
   public routeStops: StopInfo[] = [];
   public currentStop: StopInfo | undefined = undefined;
   public nextStop: StopInfo | undefined = undefined;
@@ -20,20 +21,23 @@ export class NextStopLocatorComponent implements OnInit {
   public lastNotifiedStopCode: string | null = null;
   public stopMessage: string | null = null;
 
-  constructor(private oasaApiService: OasaApiService, private locationService: LocationService) { }
+  constructor(
+    private oasaApiService: OasaApiService, 
+    private locationService: LocationService, 
+    private dataTransferService: DataTransferService) { }
 
   ngOnInit(): void {
-    // Your demo stops array (use your real stops from API or static)
+    // demo stops array
     const demoStops = [
-      { lat: 38.0440729, lng: 23.5440421, name: 'ΡΕΞ' },
-      { lat: 38.0459804, lng: 23.5489722, name: 'ΑΕΡΟΔΡΟΜΙΟΥ' },
-      { lat: 38.0475381, lng: 23.5536791, name: 'ΛΕΥΚΕΣ' }
-    ];    
+      { lat: 37.9785500, lng: 23.7161700, name: 'ΠΑΛ. ΑΓΟΡΑ (πιο κοντά)' }, // ~10m NE
+      { lat: 37.9799800, lng: 23.7188600, name: 'ΑΣΩΜΑΤΩΝ (πιο κοντά)' }, // ~10m NE
+      { lat: 37.9783600, lng: 23.7207400, name: 'ΑΓ. ΑΣΩΜΑΤΟΙ (πιο κοντά)' } // ~10m NE
+    ];
     
     const fakeLocation$ = interval(12000).pipe(
       map(i => {
         const stop = demoStops[i % demoStops.length];
-        // You can add a tiny random offset if you want to simulate 'near' the stop, not exact coords
+        // Simulate 'near' the stop, not exact coords
         const offset = 0.0001; 
         return {
           latitude: stop.lat + (Math.random() - 0.5) * offset,
