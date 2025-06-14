@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { PrismNavigatorComponent } from './components/prism-navigator/prism-navigator.component';
 import { VoiceCommandInputComponent } from './components/voice-command-input/voice-command-input.component';
 import { TesterComponent } from './tester/tester.component';
+import { NextStopLocatorComponent } from './components/next-stop-locator/next-stop-locator.component';
 
 export const routes: Routes = [
     {
@@ -20,5 +21,9 @@ export const routes: Routes = [
     {
         path: 'tester',
         component: TesterComponent
+    },
+    {
+        path: 'next-stop',
+        component: NextStopLocatorComponent
     }
 ];

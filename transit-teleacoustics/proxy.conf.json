@@ -1,0 +1,7 @@
+{
+  "/api": {
+    "target": "http://telematics.oasa.gr",
+    "secure": true,
+    "changeOrigin": true
+  }
+}

@@ -6,7 +6,7 @@ import { map, Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class OasaApiService {
-  private readonly BASE_URL = 'https://telematics.oasa.gr/api';
+  private readonly BASE_URL = '/api';
 
   constructor(private _http: HttpClient) { }
 
@@ -74,6 +74,14 @@ export class OasaApiService {
 
   webRoutesForStop(stopCode: string): Observable<Route[]> {
     return this._http.get<Route[]>(`${this.BASE_URL}/?act=webRoutesForStop&p1=${stopCode}`);
+  }
+
+  webGetRoutesDetailsAndStops(routeCode: string): Observable<Route[]> {
+    return this._http.get<any>(`${this.BASE_URL}/?act=webGetRoutesDetailsAndStops&p1=${routeCode}`);
+  }
+
+  webGetStops(routeCode: string): Observable<Route[]> {
+    return this._http.get<any>(`${this.BASE_URL}/?act=webGetStops&p1=${routeCode}`);
   }
 }
 
