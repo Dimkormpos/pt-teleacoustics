@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { BusLocation, OasaApiService, Route, Stop, StopArrival } from '../../services/oasa-api.service';
-import { catchError, EMPTY, forkJoin, interval, map, of, startWith, Subject, Subscription, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, catchError, EMPTY, forkJoin, interval, map, of, startWith, Subject, Subscription, switchMap, tap } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DataTransferService } from '../../services/data-transfer.service';
 import { Coordinates, LocationService } from '../../services/location.service';
@@ -20,10 +20,10 @@ export class BusWaitingComponent implements OnDestroy {
   protected busDistanceInMeters: number | undefined;
   protected evacuation$: Subject<void> = new Subject();
 
-  private refreshInterval: number = 20000;
-  private isFirstArrivalFound: boolean | undefined;
   private observingVehicleCode: string | undefined;
   private refreshSub: Subscription | undefined;
+  private refreshTrigger$: Subject<number> = new Subject<number>();
+  private currentRefreshInterval = 10000;
 
   constructor(
     private _oasaApi: OasaApiService,
@@ -44,43 +44,59 @@ export class BusWaitingComponent implements OnDestroy {
       })
     ).subscribe();
 
-    this.refreshSub = interval(this.refreshInterval).pipe( // emits every 10 seconds
-      startWith(0), // immediately run on subscription
-      switchMap(() =>
-        forkJoin({
-          busLocations: this._oasaApi.getBusLocations(this.busRoute!.RouteCode),
-          stopArrivals: this._oasaApi.getStopArrivals(this.stop!.StopCode)
-        }).pipe(
-      catchError((e: any) => {
-        console.error(e);
-        return EMPTY;
-      })
+    this.refreshSub = this.refreshTrigger$
+      .pipe(
+        switchMap((intervalMs) =>
+          interval(intervalMs).pipe(
+            startWith(0), // emit immediately
+            switchMap(() =>
+              forkJoin({
+                busLocations: !this.busLocation ? this._oasaApi.getBusLocations(this.busRoute!.RouteCode) : of([this.busLocation]),
+                stopArrivals: this._oasaApi.getStopArrivals(this.stop!.StopCode)
+              }).pipe(
+                catchError((e: any) => {
+                  console.error(e);
+                  return EMPTY;
+                })
+              )
+            ),
+            tap(({ busLocations, stopArrivals }) => {
+              this.stopArrival = stopArrivals.find(f => f.routeCode == this.busRoute!.RouteCode);
+
+              if (this.observingVehicleCode === undefined) {
+                this.observingVehicleCode = this.stopArrival?.vehicleCode;
+              }
+
+              if (this.observingVehicleCode !== this.stopArrival?.vehicleCode) {
+                this.evacuation$.next();
+              }
+
+              this.busLocation = busLocations.find(f =>
+                f.VEH_NO === this.stopArrival?.vehicleCode &&
+                f.ROUTE_CODE === this.stopArrival.routeCode
+              );
+
+              this.busDistanceInMeters = this.haversineDistance(
+                this.stop?.StopLat,
+                this.stop?.StopLng,
+                this.busLocation?.CS_LAT,
+                this.busLocation?.CS_LNG
+              );
+
+              const minutes = this.stopArrival?.minutesUntilArrival ?? 99;
+              const desiredInterval = minutes <= 2 ? 3000 : 10000;
+
+              if (desiredInterval !== this.currentRefreshInterval) {
+                this.currentRefreshInterval = desiredInterval;
+                this.refreshTrigger$.next(desiredInterval);
+              }
+            })
+          )
         )
-      ),
-      tap(({ busLocations, stopArrivals }) => {
-        this.stopArrival = stopArrivals.find(f => f.routeCode == this.busRoute!.RouteCode);
-
-        if (this.observingVehicleCode === undefined) {
-          this.observingVehicleCode = this.stopArrival?.vehicleCode;
-        }
-
-        if (this.observingVehicleCode != this.stopArrival?.vehicleCode) {
-          this.evacuation$.next();
-        }
-
-        this.busLocation = busLocations.find(f =>
-          f.VEH_NO == this.stopArrival?.vehicleCode &&
-          f.ROUTE_CODE == this.stopArrival.routeCode
-        );
-
-        this.busDistanceInMeters = this.haversineDistance(
-          this.stop?.StopLat,
-          this.stop?.StopLng,
-          this.busLocation?.CS_LAT,
-          this.busLocation?.CS_LNG
-        );
-      })
     ).subscribe();
+
+    // 🚀 Initial kick-off
+    this.refreshTrigger$.next(this.currentRefreshInterval);
 
   }
 
