@@ -80,8 +80,12 @@ export class OasaApiService {
     return this._http.get<any>(`${this.BASE_URL}/?act=webGetRoutesDetailsAndStops&p1=${routeCode}`);
   }
 
-  webGetStops(routeCode: string): Observable<Route[]> {
-    return this._http.get<any>(`${this.BASE_URL}/?act=webGetStops&p1=${routeCode}`);
+  webGetStops(routeCode: string): Observable<StopInfo[]> {
+    return this._http.get<StopInfo[]>(`${this.BASE_URL}/?act=webGetStops&p1=${routeCode}`);
+  }
+
+  webRouteDetails(routeCode: string): Observable<StopInfo[]> {
+    return this._http.get<StopInfo[]>(`${this.BASE_URL}/?act=webRouteDetails&p1=${routeCode}`);
   }
 }
 
@@ -117,4 +121,19 @@ export interface BusLocation {
   CS_LAT: string;      // Latitude as string (could parse to number if needed)
   CS_LNG: string;      // Longitude as string (could parse to number if needed)
   ROUTE_CODE: string;  // Route code
+}
+
+export interface StopInfo {
+  RouteStopOrder: string;
+  StopAmea: string | null;
+  StopCode: string | null;
+  StopDescr: string | null;
+  StopDescrEng: string | null;
+  StopHeading: string | null;
+  StopID: string | null;
+  StopLat: string;
+  StopLng: string
+  StopStreet: string | null;
+  StopStreetEng: string | null;
+  StopType: string | null;
 }

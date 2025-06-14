@@ -1,1 +1,5 @@
-<p>next-stop-locator works!</p>
+<div class="message-wrapper" *ngIf="stopMessage">
+  <div class="stop-message" role="alert" aria-live="assertive" aria-atomic="true">
+    {{ stopMessage }}
+  </div>
+</div>
