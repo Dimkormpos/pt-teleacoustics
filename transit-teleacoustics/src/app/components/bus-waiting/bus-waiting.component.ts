@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { BusLocation, OasaApiService, Route, Stop, StopArrival } from '../../services/oasa-api.service';
-import { catchError, EMPTY, forkJoin, interval, map, of, startWith, Subject, switchMap, tap } from 'rxjs';
+import { catchError, EMPTY, forkJoin, interval, map, of, startWith, Subject, Subscription, switchMap, tap } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DataTransferService } from '../../services/data-transfer.service';
 import { Coordinates, LocationService } from '../../services/location.service';
@@ -12,7 +12,7 @@ import { Coordinates, LocationService } from '../../services/location.service';
   templateUrl: './bus-waiting.component.html',
   styleUrl: './bus-waiting.component.css'
 })
-export class BusWaitingComponent {
+export class BusWaitingComponent implements OnDestroy {
   protected stop: Stop | undefined;
   protected stopArrival: StopArrival | undefined;
   protected busRoute: Route | undefined;
@@ -22,7 +22,8 @@ export class BusWaitingComponent {
 
   private refreshInterval: number = 20000;
   private isFirstArrivalFound: boolean | undefined;
-  private observingVehicleCode: string | undefined
+  private observingVehicleCode: string | undefined;
+  private refreshSub: Subscription | undefined;
 
   constructor(
     private _oasaApi: OasaApiService,
@@ -43,7 +44,7 @@ export class BusWaitingComponent {
       })
     ).subscribe();
 
-    interval(this.refreshInterval).pipe( // emits every 10 seconds
+    this.refreshSub = interval(this.refreshInterval).pipe( // emits every 10 seconds
       startWith(0), // immediately run on subscription
       switchMap(() =>
         forkJoin({
@@ -83,6 +84,9 @@ export class BusWaitingComponent {
 
   }
 
+  public ngOnDestroy(): void {
+    this.refreshSub?.unsubscribe();
+  }
   private haversineDistance(
     inputLat1: string | undefined,
     inputLon1: string | undefined,
