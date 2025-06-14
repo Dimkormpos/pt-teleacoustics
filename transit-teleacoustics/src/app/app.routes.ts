@@ -28,7 +28,7 @@ export const routes: Routes = [
         component: NextStopLocatorComponent
     },
     {
-        path: 'bus-waiting/:routeCode',
+        path: 'bus-waiting',
         component: BusWaitingComponent
     }
 ];

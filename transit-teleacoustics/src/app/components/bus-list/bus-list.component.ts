@@ -4,6 +4,7 @@ import { OasaApiService, Route } from '../../services/oasa-api.service';
 import { catchError, EMPTY, forkJoin, of, switchMap, tap } from 'rxjs';
 import { Coordinates, LocationService } from '../../services/location.service';
 import { Router } from '@angular/router';
+import { DataTransferService } from '../../services/data-transfer.service';
 
 @Component({
   selector: 'app-bus-list',
@@ -21,7 +22,8 @@ export class BusListComponent {
   constructor(
     private _oasaApi: OasaApiService,
     private _locationApi: LocationService,
-    private _router: Router
+    private _router: Router,
+    private _dataTransfer: DataTransferService
   ) {
     _locationApi.getCurrentLocation().pipe(
       catchError((e: any) => {
@@ -64,7 +66,8 @@ export class BusListComponent {
   }
 
   protected onBusSelected(busRoute: Route) {
-    this._router.navigate(['/bus-waiting', busRoute.RouteCode]);
+    this._dataTransfer.setSelectedBusRoute(busRoute);
+    this._router.navigate(['/bus-waiting']);
   }
 
 

@@ -22,7 +22,7 @@ export class DataTransferService {
     this.currentStop = input;
   }
 
-  public getcurrentStop(): Stop | undefined {
+  public getCurrentStop(): Stop | undefined {
     return this.currentStop;
   }
 }
