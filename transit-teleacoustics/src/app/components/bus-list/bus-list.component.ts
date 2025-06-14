@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { OasaApiService, Route } from '../../services/oasa-api.service';
+import { OasaApiService, Route, Stop } from '../../services/oasa-api.service';
 import { catchError, EMPTY, forkJoin, of, switchMap, tap } from 'rxjs';
 import { Coordinates, LocationService } from '../../services/location.service';
 import { Router } from '@angular/router';
@@ -13,11 +13,9 @@ import { DataTransferService } from '../../services/data-transfer.service';
   styleUrl: './bus-list.component.css'
 })
 export class BusListComponent {
-  protected buseRoutes: Route[] = [];
+  protected busRoutes: Route[] | undefined;
   protected myStationUi: string | undefined;
   protected myStationDistanceInMeters: number | undefined;
-
-  private myStationCode: string | undefined;
 
   constructor(
     private _oasaApi: OasaApiService,
@@ -41,6 +39,7 @@ export class BusListComponent {
         return EMPTY;
       }),
       tap(t => {
+        this._dataTransfer.setCurrentStop(t.stop);
         const distanceKm = parseFloat(t.stop.distance);   // parse string to number (km)
         const distanceMeters = distanceKm * 100000;     // convert km to meters
         this.myStationUi = t.stop.StopDescr;
@@ -50,7 +49,8 @@ export class BusListComponent {
         return forkJoin({
           coords: of(s.coords),
           stop: of(s.stop),
-          buses: this._oasaApi.webRoutesForStop(s.stop.StopCode),
+          routedBuses: this._oasaApi.webRoutesForStop(s.stop.StopCode), //'400075'
+          arrivalBuses: this._oasaApi.getStopArrivals(s.stop.StopCode), //'400075'
         });
       }),
       catchError((e: any) => {
@@ -58,11 +58,9 @@ export class BusListComponent {
         return EMPTY;
       }),
       tap(t => {
-        console.log(t.buses);
-
-        this.buseRoutes = t.buses;
+        this.busRoutes = t.routedBuses.filter(f => t.arrivalBuses.some(s => s.routeCode == f.RouteCode));
       }),
-    ).subscribe()
+    ).subscribe();
   }
 
   protected onBusSelected(busRoute: Route) {

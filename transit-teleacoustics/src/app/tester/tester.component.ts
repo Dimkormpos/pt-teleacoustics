@@ -14,19 +14,12 @@ export class TesterComponent {
   protected locUi: string | undefined;
   protected stopsUi: string | undefined;
   protected busesUi: string | undefined;
-  protected testUi: string | undefined;
+  protected busLocationUi: string | undefined;
 
   constructor(
     private _oasaApi: OasaApiService,
     private _locationApi: LocationService
   ) {
-    _oasaApi.getStopsForRoute("5082").pipe(
-      catchError((e: any) => {
-        this.testUi = JSON.stringify(e, null, 2);
-        return EMPTY;
-      }),
-      tap(t => { this.testUi = t })
-    ).subscribe();
     _locationApi.getCurrentLocation().pipe(
       catchError((e: any) => {
         this.locUi = JSON.stringify(e, null, 2);
@@ -64,14 +57,22 @@ export class TesterComponent {
       tap(t => {
         this.busesUi = t.buses.map(m => {
           return `LineID: ${m.LineID}, LineDescr: ${m.LineDescr} <br/>`
-        }).join('')
+        }).join('');
       }),
       switchMap(s => {
         return forkJoin({
           coords: of(s.coords),
           stop: of(s.stop),
-          buses: this._oasaApi.webRoutesForStop(s.stop.StopCode),
+          buses: of(s.buses),
+          busLocation: this._oasaApi.getBusLocation(s.buses.at(0)?.RouteCode ?? '')
         });
+      }),
+      catchError((e: any) => {
+        this.busLocationUi = JSON.stringify(e, null, 2);
+        return EMPTY;
+      }),
+      tap(t => {
+        this.busLocationUi = JSON.stringify(t.busLocation, null, 2);
       }),
     ).subscribe();
   }

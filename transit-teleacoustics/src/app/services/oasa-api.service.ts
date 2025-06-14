@@ -13,11 +13,18 @@ export class OasaApiService {
   /**
    * Gets bus arrival information for a specific stop and route.
    * @param stopCode e.g. "060153"
-   * @param routeCode e.g. "0600"
    */
-  getStopArrivals(stopCode: string, routeCode: string): Observable<any> {
-    const url = `${this.BASE_URL}/?act=getStopArrivals&p1=${stopCode}&p2=${routeCode}`;
-    return this._http.get(url);
+  getStopArrivals(stopCode: string): Observable<StopArrival[]> {
+    const url = `${this.BASE_URL}/?act=getStopArrivals&p1=${stopCode}`;
+    return this._http.get<any[]>(url).pipe(
+      map(items =>
+        items.map(item => ({
+          routeCode: item.route_code,
+          vehicleCode: item.veh_code,
+          minutesUntilArrival: parseInt(item.btime2, 10)
+        }))
+      )
+    );
   }
 
   /**
@@ -68,7 +75,7 @@ export class OasaApiService {
    * Gets the real-time location of a specific bus by vehicle ID.
    * @param routeCode The code of the route
    */
-  getBusLocation(routeCode: string): Observable<BusLocation[]> {
+  getBusLocations(routeCode: string): Observable<BusLocation[]> {
     return this._http.get<BusLocation[]>(`${this.BASE_URL}/?act=getBusLocation&p1=${routeCode}`);
   }
 
@@ -152,4 +159,16 @@ export interface StopInfo {
   StopStreet: string | null;
   StopStreetEng: string | null;
   StopType: string | null;
+}
+
+export interface BusLocation {
+  route_code: string;
+  veh_code: string;
+  btime2: string;
+}
+
+export interface StopArrival {
+  routeCode: string;
+  vehicleCode: string;
+  minutesUntilArrival: number;
 }

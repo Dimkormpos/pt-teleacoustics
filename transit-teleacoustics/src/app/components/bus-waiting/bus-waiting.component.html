@@ -1,1 +1,7 @@
-<p>bus-waiting works!</p>
+<p>Waiting for bus <b>{{busRoute?.LineID}}</b></p>
+
+<p>VEH_NO: <b>{{this.busLocation?.VEH_NO}}</b></p>
+<p>Lat: <b>{{this.busLocation?.CS_LAT}}</b></p>
+<p>Lng: <b>{{this.busLocation?.CS_LNG}}</b></p>
+<p>busDistanceInMeters: <b>{{this.busDistanceInMeters?.toFixed(0)}}</b></p>
+<p>Άφιξη σε <b>{{stopArrival?.minutesUntilArrival || '-'}}</b> λεπτά</p>
