@@ -63,7 +63,8 @@
               "buildTarget": "transit-teleacoustics:build:production"
             },
             "development": {
-              "buildTarget": "transit-teleacoustics:build:development"
+              "buildTarget": "transit-teleacoustics:build:development",
+              "proxyConfig": "proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"
