@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { BusLocation, OasaApiService, Route, Stop, StopArrival } from '../../services/oasa-api.service';
-import { catchError, EMPTY, forkJoin, interval, map, of, startWith, switchMap, tap } from 'rxjs';
+import { catchError, EMPTY, forkJoin, interval, map, of, startWith, Subject, switchMap, tap } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DataTransferService } from '../../services/data-transfer.service';
 import { Coordinates, LocationService } from '../../services/location.service';
@@ -18,8 +18,11 @@ export class BusWaitingComponent {
   protected busRoute: Route | undefined;
   protected busLocation: BusLocation | undefined;
   protected busDistanceInMeters: number | undefined;
+  protected evacuation$: Subject<void> = new Subject();
 
-  private refreshInterval: number = 10000;
+  private refreshInterval: number = 20000;
+  private isFirstArrivalFound: boolean | undefined;
+  private observingVehicleCode: string | undefined
 
   constructor(
     private _oasaApi: OasaApiService,
@@ -33,6 +36,12 @@ export class BusWaitingComponent {
       this._router.navigate(['/home']);
       return;
     }
+
+    this.evacuation$.asObservable().pipe(
+      tap(_ => {
+        this._router.navigate(['/next-stop']);
+      })
+    ).subscribe();
 
     interval(this.refreshInterval).pipe( // emits every 10 seconds
       startWith(0), // immediately run on subscription
@@ -49,6 +58,15 @@ export class BusWaitingComponent {
       ),
       tap(({ busLocations, stopArrivals }) => {
         this.stopArrival = stopArrivals.find(f => f.routeCode == this.busRoute!.RouteCode);
+
+        if (this.observingVehicleCode === undefined) {
+          this.observingVehicleCode = this.stopArrival?.vehicleCode;
+        }
+
+        if (this.observingVehicleCode != this.stopArrival?.vehicleCode) {
+          this.evacuation$.next();
+        }
+
         this.busLocation = busLocations.find(f =>
           f.VEH_NO == this.stopArrival?.vehicleCode &&
           f.ROUTE_CODE == this.stopArrival.routeCode
