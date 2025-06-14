@@ -64,7 +64,7 @@ export class TesterComponent {
           coords: of(s.coords),
           stop: of(s.stop),
           buses: of(s.buses),
-          busLocation: this._oasaApi.getBusLocation(s.buses.at(0)?.RouteCode ?? '')
+          busLocation: this._oasaApi.getBusLocations(s.buses.at(0)?.RouteCode ?? '')
         });
       }),
       catchError((e: any) => {
