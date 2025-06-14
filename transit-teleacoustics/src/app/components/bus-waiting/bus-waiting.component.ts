@@ -51,7 +51,7 @@ export class BusWaitingComponent implements OnDestroy {
             startWith(0), // emit immediately
             switchMap(() =>
               forkJoin({
-                busLocations: !this.busLocation ? this._oasaApi.getBusLocations(this.busRoute!.RouteCode) : of([this.busLocation]),
+                busLocations: this._oasaApi.getBusLocations(this.busRoute!.RouteCode),
                 stopArrivals: this._oasaApi.getStopArrivals(this.stop!.StopCode)
               }).pipe(
                 catchError((e: any) => {
