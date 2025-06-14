@@ -1,0 +1,33 @@
+.message-wrapper {
+    display: flex;
+    flex-direction: column;     
+    justify-content: flex-start;
+    align-items: center;
+
+    padding: 2rem;
+    width: 100%;
+    min-height: 100vh;        
+    box-sizing: border-box;
+}
+
+
+.bus-info-message {
+    width: 100%;
+    padding: 1rem 2rem;
+    margin-bottom: 1rem;
+
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 2px solid white;
+    border-radius: 12px;
+
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: white;
+
+    text-align: center;
+    box-sizing: border-box;
+    }
+
+    .bus-info-message p {
+    margin: 0.5rem 0;
+}
