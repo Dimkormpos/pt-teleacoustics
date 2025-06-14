@@ -6,7 +6,7 @@ import { map, Observable, of, switchMap, tap } from 'rxjs';
   providedIn: 'root'
 })
 export class OasaApiService {
-  private readonly BASE_URL = '/api';
+  private readonly BASE_URL = "/api"; //"http://34.175.132.35:8080/api";
 
   constructor(private _http: HttpClient) { }
 
