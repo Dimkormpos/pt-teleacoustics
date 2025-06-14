@@ -1,5 +1,21 @@
-<div class="message-wrapper" *ngIf="stopMessage">
-  <div class="stop-message" role="alert" aria-live="assertive" aria-atomic="true">
-    {{ stopMessage }}
+<div class="message-wrapper">
+  <div
+    *ngIf="approachingStopMessage"
+    class="stop-message"
+    role="alert"
+    aria-live="assertive"
+    aria-atomic="true"
+  >
+    {{ approachingStopMessage }}
+  </div>
+
+  <div
+    *ngIf="nextStopMessage"
+    class="stop-message"
+    role="alert"
+    aria-live="polite"
+    aria-atomic="true"
+  >
+    {{ nextStopMessage }}
   </div>
 </div>

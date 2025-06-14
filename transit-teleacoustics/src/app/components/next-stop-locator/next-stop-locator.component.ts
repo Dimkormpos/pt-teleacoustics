@@ -19,7 +19,8 @@ export class NextStopLocatorComponent implements OnInit {
   public nextStop: StopInfo | undefined = undefined;
   public hasInitialized = false;
   public lastNotifiedStopCode: string | null = null;
-  public stopMessage: string | null = null;
+  public approachingStopMessage: string | null = null;
+  public nextStopMessage: string | null = null;  
 
   constructor(
     private oasaApiService: OasaApiService, 
@@ -68,7 +69,7 @@ export class NextStopLocatorComponent implements OnInit {
             const nextOrder = (parseInt(this.currentStop.RouteStopOrder, 10) + 1).toString();
             this.nextStop = this.routeStops.find(x => x.RouteStopOrder === nextOrder);
             console.log('First next stop:', this.nextStop?.StopDescr);
-            this.stopMessage = `Επόμενη στάση: ${this.nextStop?.StopDescr}`;
+            this.nextStopMessage = `Επόμενη στάση: ${this.nextStop?.StopDescr}`;
           }
 
           this.hasInitialized = true;
@@ -85,7 +86,7 @@ export class NextStopLocatorComponent implements OnInit {
 
           if (distance < 50 && this.nextStop.StopCode !== this.lastNotifiedStopCode) {
             console.log(`You're about to reach stop: ${this.nextStop.StopDescr}`);
-            this.stopMessage = `Πλησιάζετε στη στάση: ${this.nextStop.StopDescr}`;
+            this.approachingStopMessage = `Πλησιάζετε στη στάση: ${this.nextStop.StopDescr}`;
 
             // Prevent duplicate notifications
             this.lastNotifiedStopCode = this.nextStop.StopCode;         
@@ -96,10 +97,10 @@ export class NextStopLocatorComponent implements OnInit {
 
             if (this.nextStop) {
               console.log('Upcoming next stop:', this.nextStop.StopDescr);
-              this.stopMessage += ` | Επόμενη στάση: ${this.nextStop.StopDescr}`;
+              this.nextStopMessage = `Επόμενη στάση: ${this.nextStop.StopDescr}`;
             } else {
               console.log('End of route reached');
-              this.stopMessage += ` | Τέλος διαδρομής`;
+              this.nextStopMessage = `Τέλος διαδρομής`;
             }
           }
         }        
