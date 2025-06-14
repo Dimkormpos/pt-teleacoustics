@@ -49,8 +49,8 @@ export class BusListComponent {
         return forkJoin({
           coords: of(s.coords),
           stop: of(s.stop),
-          routedBuses: this._oasaApi.webRoutesForStop(s.stop.StopCode), //'400075'
-          arrivalBuses: this._oasaApi.getStopArrivals(s.stop.StopCode), //'400075'
+          routedBuses: this._oasaApi.webRoutesForStop(s.stop.StopCode),
+          arrivalBuses: this._oasaApi.getStopArrivals(s.stop.StopCode),
         });
       }),
       catchError((e: any) => {

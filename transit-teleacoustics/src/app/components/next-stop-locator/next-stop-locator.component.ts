@@ -28,6 +28,9 @@ export class NextStopLocatorComponent implements OnInit {
     private dataTransferService: DataTransferService) { }
 
   ngOnInit(): void {
+    this.routeCode = this.dataTransferService.getSelectedBusRoute()?.RouteCode ?? "1890";
+    this.currentStopCode = this.dataTransferService.getCurrentStop()?.StopCode ?? "60372";
+
     // demo stops array
     const demoStops = [
       { lat: 37.9785500, lng: 23.7161700, name: 'ΠΑΛ. ΑΓΟΡΑ (πιο κοντά)' }, // ~10m NE
@@ -53,8 +56,8 @@ export class NextStopLocatorComponent implements OnInit {
       })
     );
     
-    // combineLatest([this.oasaApiService.webGetStops(this.routeCode), this.locationService.watchPosition()])
-    combineLatest([this.oasaApiService.webGetStops(this.routeCode), fakeLocation$])
+    combineLatest([this.oasaApiService.webGetStops(this.routeCode), this.locationService.watchPosition()])
+    // combineLatest([this.oasaApiService.webGetStops(this.routeCode), fakeLocation$])
     .pipe(
       tap(([stops, coordinates]) => {
         this.routeStops = stops;
