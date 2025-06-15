@@ -1,17 +1,17 @@
-<div aria-live="polite" style="position: absolute; left: -9999px;">
+<div style="position: absolute; left: -9999px;" aria-live="off">
     Λεωφορείο {{ busRoute?.LineID }}
 </div>
-@if(stopArrival?.minutesUntilArrival){
-<div aria-live="polite" style="position: absolute; left: -9999px;">
-    άφιξη σε {{ stopArrival?.minutesUntilArrival }} λεπτά.
-</div>
-@if(busDistanceInMeters && busDistanceInMeters <= 50){ <div aria-live="polite"
+    @if(stopArrival?.minutesUntilArrival){
+    <div aria-live="polite" style="position: absolute; left: -9999px;">
+        άφιξη σε {{ stopArrival?.minutesUntilArrival }} {{ stopArrival?.minutesUntilArrival === 1 ? ' λεπτό ' : ' λεπτά' }}.
+        </div>
+    }
+    
+    @if(busDistanceInMeters && busDistanceInMeters <= 100){ <div aria-live="polite"
     style="position: absolute; left: -9999px;">
     Απόσταση {{ busDistanceInMeters.toFixed(0) }} μέτρα
     </div>
     }
-    }
-
     @if(stopArrival?.minutesUntilArrival === 0){
     <div aria-live="polite" style="position: absolute; left: -9999px;">
         Επιβίβαση ΤΩΡΑ!!!
@@ -20,11 +20,8 @@
 <div class="message-wrapper">
     <div class="bus-info-message">
         <p aria-hidden="true">Αναμονή για το λεωφορείο <b>{{ busRoute?.LineID }}</b></p>
-        <p aria-hidden="true">Άφιξη σε <b>{{ stopArrival?.minutesUntilArrival || '-' }}</b> λεπτά</p>
+        <p aria-hidden="true">Άφιξη σε <b>{{ stopArrival?.minutesUntilArrival || '-' }}</b> {{ stopArrival?.minutesUntilArrival
+            === 1 ? ' λεπτό ' : ' λεπτά' }}</p>
         <p aria-hidden="true">Απόσταση: <b>{{ busDistanceInMeters?.toFixed(0) }}</b> μέτρα</p>
     </div>
 </div>
-
-
-
-<!-- [attr.aria-label]="'Λεωφορείο ' + busRoute.LineID  + ', γραμμή' + busRoute.LineDescr" -->

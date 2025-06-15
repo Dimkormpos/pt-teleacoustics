@@ -26,12 +26,11 @@ export class BusWaitingComponent implements OnDestroy {
   private currentRefreshInterval = 10000;
 
   private demoIteration: number = 0;
-  private demoBusLocations: Coordinates[] = [
-    { latitude: 37.949322, longitude: 23.640217 },
-    { latitude: 37.949179, longitude: 23.635893 },
-    { latitude: 37.948781, longitude: 23.629263 },
-    { latitude: 37.949263, longitude: 23.626248 },
-    { latitude: 37.950575, longitude: 23.623319 },
+  private demoBusDistance: number[] = [
+    575,
+    120,
+    20,
+    5
   ];
 
   constructor(
@@ -124,12 +123,12 @@ export class BusWaitingComponent implements OnDestroy {
       this.observingVehicleCode = this.stopArrival?.vehicleCode;
     }
 
-    const demoCoords = this.demoBusLocations.at(Math.floor(Math.random() * this.demoBusLocations.length))
+    const demoCoords = this.demoBusDistance.at(Math.floor(Math.random() * this.demoBusDistance.length))
 
     this.busLocation = {
       btime2: '9',
-      CS_LAT: demoCoords?.latitude.toString() || '',
-      CS_LNG: demoCoords?.longitude.toString() || '',
+      CS_LAT: '',
+      CS_LNG: '',
       CS_DATE: '',
       route_code: '',
       ROUTE_CODE: '',
@@ -138,13 +137,7 @@ export class BusWaitingComponent implements OnDestroy {
     }
 
     const minutes = this.stopArrival?.minutesUntilArrival ?? 99;
-    this.busDistanceInMeters = minutes == 0 ? 5 : this.haversineDistance(
-      this.stop?.StopLat,
-      this.stop?.StopLng,
-      this.busLocation?.CS_LAT,
-      this.busLocation?.CS_LNG
-    );
-
+    this.busDistanceInMeters = this.demoBusDistance[this.demoIteration]
     const desiredInterval = minutes <= 2 ? 10000 : 10000;
 
     if (minutes == -1) {
