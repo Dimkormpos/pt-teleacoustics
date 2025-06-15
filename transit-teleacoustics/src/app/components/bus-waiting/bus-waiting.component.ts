@@ -23,7 +23,7 @@ export class BusWaitingComponent implements OnDestroy {
   private observingVehicleCode: string | undefined;
   private refreshSub: Subscription | undefined;
   private refreshTrigger$: Subject<number> = new Subject<number>();
-  private currentRefreshInterval = 10000;
+  private currentRefreshInterval = 6000;
 
   private demoIteration: number = 0;
   private demoBusDistance: number[] = [
@@ -138,7 +138,7 @@ export class BusWaitingComponent implements OnDestroy {
 
     const minutes = this.stopArrival?.minutesUntilArrival ?? 99;
     this.busDistanceInMeters = this.demoBusDistance[this.demoIteration]
-    const desiredInterval = minutes <= 2 ? 10000 : 10000;
+    const desiredInterval = minutes <= 2 ? 6000 : 6000;
 
     if (minutes == -1) {
       this.evacuation$.next();
