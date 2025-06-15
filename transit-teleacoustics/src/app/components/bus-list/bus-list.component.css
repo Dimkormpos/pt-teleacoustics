@@ -33,3 +33,7 @@
     min-height: 100vh;      
     box-sizing: border-box;
 }
+
+.message-wrapper section {
+    width: 100%;
+}
