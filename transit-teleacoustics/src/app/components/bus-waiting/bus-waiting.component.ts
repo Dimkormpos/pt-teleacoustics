@@ -114,11 +114,10 @@ export class BusWaitingComponent implements OnDestroy {
 
   }
   private playDemo() {
-    console.log('here')
     this.stopArrival = {
       vehicleCode: 'FAKE01',
       routeCode: this.busRoute!.RouteCode,
-      minutesUntilArrival: 5 - this.demoIteration
+      minutesUntilArrival: 3 - this.demoIteration
     };
 
     if (this.observingVehicleCode === undefined) {
@@ -146,7 +145,7 @@ export class BusWaitingComponent implements OnDestroy {
       this.busLocation?.CS_LNG
     );
 
-    const desiredInterval = minutes <= 2 ? 5000 : 5000;
+    const desiredInterval = minutes <= 2 ? 10000 : 10000;
 
     if (minutes == -1) {
       this.evacuation$.next();
