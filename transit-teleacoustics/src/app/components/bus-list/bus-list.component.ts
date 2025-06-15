@@ -59,6 +59,20 @@ export class BusListComponent {
       }),
       tap(t => {
         this.busRoutes = t.routedBuses.filter(f => t.arrivalBuses.some(s => s.routeCode == f.RouteCode));
+
+        // Add a fake bus (demo only)
+        this.busRoutes.unshift({
+          RouteCode: 'FAKE01',
+          LineCode: 'DEMO123',
+          RouteDescr: 'Demo Bus',
+          RouteDescrEng: 'Demo Bus',
+          RouteType: 'Urban',
+          RouteDistance: '5000', // meters
+          LineID: '999',
+          LineDescr: 'ΠΕΙΡΑΙΑΣ - ΝΕΑΠΟΛΗ (DEMO LINE)',
+          LineDescrEng: 'Demo Line',
+          MasterLineCode: 'DEMOMASTER'
+        });        
       }),
     ).subscribe();
   }

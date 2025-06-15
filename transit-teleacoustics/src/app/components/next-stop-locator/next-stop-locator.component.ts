@@ -12,8 +12,8 @@ import { DataTransferService } from '../../services/data-transfer.service';
   styleUrl: './next-stop-locator.component.css'
 })
 export class NextStopLocatorComponent implements OnInit {
-  public routeCode: string = "1890"
-  public currentStopCode: string = "60372"
+  public routeCode: string = "3347"
+  public currentStopCode: string = "400140"
   public routeStops: StopInfo[] = [];
   public currentStop: StopInfo | undefined = undefined;
   public nextStop: StopInfo | undefined = undefined;
@@ -28,14 +28,14 @@ export class NextStopLocatorComponent implements OnInit {
     private dataTransferService: DataTransferService) { }
 
   ngOnInit(): void {
-    this.routeCode = this.dataTransferService.getSelectedBusRoute()?.RouteCode ?? "1890";
-    this.currentStopCode = this.dataTransferService.getCurrentStop()?.StopCode ?? "60372";
+    // this.routeCode = this.dataTransferService.getSelectedBusRoute()?.RouteCode ?? "3347";
+    // this.currentStopCode = this.dataTransferService.getCurrentStop()?.StopCode ?? "400141";
 
     // demo stops array
     const demoStops = [
-      { lat: 37.9785500, lng: 23.7161700, name: 'ΠΑΛ. ΑΓΟΡΑ (πιο κοντά)' }, // ~10m NE
-      { lat: 37.9799800, lng: 23.7188600, name: 'ΑΣΩΜΑΤΩΝ (πιο κοντά)' }, // ~10m NE
-      { lat: 37.9783600, lng: 23.7207400, name: 'ΑΓ. ΑΣΩΜΑΤΟΙ (πιο κοντά)' } // ~10m NE
+      { lat: 37.9496069, lng: 23.6410547, name: 'ΠΑΡΑΛΙΑ' },
+      { lat: 37.9482284, lng: 23.6420818, name: 'ΣΤ.ΜΕΤΡΟ ΠΕΙΡΑΙΑΣ' },
+      { lat: 37.9460535, lng: 23.6410725, name: 'ΠΕΙΡΑΙΑΣ ΠΛ. ΚΑΡΑΪΣΚΑΚΗ' }
     ];
     
     const fakeLocation$ = interval(12000).pipe(
@@ -56,8 +56,8 @@ export class NextStopLocatorComponent implements OnInit {
       })
     );
     
-    combineLatest([this.oasaApiService.webGetStops(this.routeCode), this.locationService.watchPosition()])
-    // combineLatest([this.oasaApiService.webGetStops(this.routeCode), fakeLocation$])
+    // combineLatest([this.oasaApiService.webGetStops(this.routeCode), this.locationService.watchPosition()])
+    combineLatest([this.oasaApiService.webGetStops(this.routeCode), fakeLocation$])
     .pipe(
       tap(([stops, coordinates]) => {
         this.routeStops = stops;

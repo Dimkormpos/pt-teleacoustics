@@ -26,8 +26,8 @@ export class LocationService {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           observer.next({
-            latitude: 37.948781, //position.coords.latitude,
-            longitude: 23.642337, //position.coords.longitude,
+            latitude: 37.948552622701776, //position.coords.latitude,
+            longitude: 23.642062305102577, //position.coords.longitude,
             accuracy: position.coords.accuracy
           });
           observer.complete();
@@ -57,8 +57,8 @@ export class LocationService {
         (position) => {
           this.ngZone.run(() => {
             observer.next({
-              latitude: 37.948781, //position.coords.latitude,
-              longitude: 23.642337, //position.coords.longitude,
+              latitude: 37.948552622701776, //position.coords.latitude,
+              longitude: 23.642062305102577, //position.coords.longitude,
               accuracy: position.coords.accuracy
             });
           });
