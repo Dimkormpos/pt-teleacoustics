@@ -1,11 +1,11 @@
 <div class="message-wrapper">
-    <section *ngIf="myStationUi" aria-labelledby="station-heading">
+    <section *ngIf="myStationUi" aria-labelledby="station-heading" lang="el">
         <h2 id="station-heading">
             Βρίσκεσαι στην στάση: {{myStationUi}}. (Σε απόσταση {{myStationDistanceInMeters?.toFixed(0)}} μέτρα)
         </h2>
     </section>
     
-    <section *ngIf="busRoutes" aria-labelledby="buses-heading">
+    <section *ngIf="busRoutes" aria-labelledby="buses-heading" lang="el">
         <h2 id="buses-heading">Διερχόμενα λεωφορία στην στάση σου</h2>
     
         <ul class="list" role="list">
