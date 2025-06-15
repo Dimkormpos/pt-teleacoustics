@@ -25,6 +25,15 @@ export class BusWaitingComponent implements OnDestroy {
   private refreshTrigger$: Subject<number> = new Subject<number>();
   private currentRefreshInterval = 10000;
 
+  private demoIteration: number = 0;
+  private demoBusLocations: Coordinates[] = [
+    { latitude: 37.949322, longitude: 23.640217 },
+    { latitude: 37.949179, longitude: 23.635893 },
+    { latitude: 37.948781, longitude: 23.629263 },
+    { latitude: 37.949263, longitude: 23.626248 },
+    { latitude: 37.950575, longitude: 23.623319 },
+  ];
+
   constructor(
     private _oasaApi: OasaApiService,
     private _dataTransfer: DataTransferService,
@@ -61,34 +70,39 @@ export class BusWaitingComponent implements OnDestroy {
               )
             ),
             tap(({ busLocations, stopArrivals }) => {
-              this.stopArrival = stopArrivals.find(f => f.routeCode == this.busRoute!.RouteCode);
+              if (this.busRoute!.RouteCode == 'FAKE01') {
+                this.playDemo();
+              } else {
 
-              if (this.observingVehicleCode === undefined) {
-                this.observingVehicleCode = this.stopArrival?.vehicleCode;
-              }
+                this.stopArrival = stopArrivals.find(f => f.routeCode == this.busRoute!.RouteCode);
 
-              if (this.observingVehicleCode !== this.stopArrival?.vehicleCode) {
-                this.evacuation$.next();
-              }
+                if (this.observingVehicleCode === undefined) {
+                  this.observingVehicleCode = this.stopArrival?.vehicleCode;
+                }
 
-              this.busLocation = busLocations.find(f =>
-                f.VEH_NO === this.stopArrival?.vehicleCode &&
-                f.ROUTE_CODE === this.stopArrival.routeCode
-              );
+                if (this.observingVehicleCode !== this.stopArrival?.vehicleCode) {
+                  this.evacuation$.next();
+                }
 
-              this.busDistanceInMeters = this.haversineDistance(
-                this.stop?.StopLat,
-                this.stop?.StopLng,
-                this.busLocation?.CS_LAT,
-                this.busLocation?.CS_LNG
-              );
+                this.busLocation = busLocations.find(f =>
+                  f.VEH_NO === this.stopArrival?.vehicleCode &&
+                  f.ROUTE_CODE === this.stopArrival.routeCode
+                );
 
-              const minutes = this.stopArrival?.minutesUntilArrival ?? 99;
-              const desiredInterval = minutes <= 2 ? 3000 : 10000;
+                this.busDistanceInMeters = this.haversineDistance(
+                  this.stop?.StopLat,
+                  this.stop?.StopLng,
+                  this.busLocation?.CS_LAT,
+                  this.busLocation?.CS_LNG
+                );
 
-              if (desiredInterval !== this.currentRefreshInterval) {
-                this.currentRefreshInterval = desiredInterval;
-                this.refreshTrigger$.next(desiredInterval);
+                const minutes = this.stopArrival?.minutesUntilArrival ?? 99;
+                const desiredInterval = minutes <= 2 ? 3000 : 10000;
+
+                if (desiredInterval !== this.currentRefreshInterval) {
+                  this.currentRefreshInterval = desiredInterval;
+                  this.refreshTrigger$.next(desiredInterval);
+                }
               }
             })
           )
@@ -98,6 +112,52 @@ export class BusWaitingComponent implements OnDestroy {
     // 🚀 Initial kick-off
     this.refreshTrigger$.next(this.currentRefreshInterval);
 
+  }
+  private playDemo() {
+    console.log('here')
+    this.stopArrival = {
+      vehicleCode: 'FAKE01',
+      routeCode: this.busRoute!.RouteCode,
+      minutesUntilArrival: 5 - this.demoIteration
+    };
+
+    if (this.observingVehicleCode === undefined) {
+      this.observingVehicleCode = this.stopArrival?.vehicleCode;
+    }
+
+    const demoCoords = this.demoBusLocations.at(Math.floor(Math.random() * this.demoBusLocations.length))
+
+    this.busLocation = {
+      btime2: '9',
+      CS_LAT: demoCoords?.latitude.toString() || '',
+      CS_LNG: demoCoords?.longitude.toString() || '',
+      CS_DATE: '',
+      route_code: '',
+      ROUTE_CODE: '',
+      veh_code: '',
+      VEH_NO: '',
+    }
+
+    const minutes = this.stopArrival?.minutesUntilArrival ?? 99;
+    this.busDistanceInMeters = minutes == 0 ? 5 : this.haversineDistance(
+      this.stop?.StopLat,
+      this.stop?.StopLng,
+      this.busLocation?.CS_LAT,
+      this.busLocation?.CS_LNG
+    );
+
+    const desiredInterval = minutes <= 2 ? 5000 : 5000;
+
+    if (minutes == -1) {
+      this.evacuation$.next();
+    }
+
+    if (desiredInterval !== this.currentRefreshInterval) {
+      this.currentRefreshInterval = desiredInterval;
+      this.refreshTrigger$.next(desiredInterval);
+    }
+
+    this.demoIteration++;
   }
 
   public ngOnDestroy(): void {

@@ -58,6 +58,13 @@
           "defaultConfiguration": "production"
         },
         "serve": {
+          "options": {
+            "ssl": true,
+            "sslKey": "ssl/transit-tele.key",
+            "sslCert": "ssl/transit-tele.crt",
+            "host": "0.0.0.0",
+            "port": 4200
+          },
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
